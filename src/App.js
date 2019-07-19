@@ -1,25 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import "typeface-roboto";
+import SignUp from "./components/Signup";
+import NavBar from "./components/NavBar";
+import SignIn from "./components/Login";
+import store from "./components/Store";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <BrowserRouter>
+        <div className="App">
+          <NavBar />
+          <Route path="/login" component={SignIn} />
+          <Route exact path="/" component={SignUp} />
+        </div>
+      </BrowserRouter>
+    </Provider>
   );
 }
 
