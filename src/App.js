@@ -5,15 +5,18 @@ import "typeface-roboto";
 import SignUp from "./components/Signup";
 import NavBar from "./components/NavBar";
 import SignIn from "./components/Login";
+import store from "./Store";
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="App">
-        <NavBar />
-        <Route path="/login" component={SignIn} />
-        <Route exact path="/" component={SignUp} />
-      </div>
+      <Provider store={store}>
+        <div className="App">
+          <NavBar />
+          <Route path="/login" component={SignIn} />
+          <Route exact path="/" component={SignUp} />
+        </div>
+      </Provider>
     </BrowserRouter>
   );
 }
