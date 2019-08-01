@@ -2,7 +2,6 @@ import { NEW_USER, LOGIN_USER } from "./types";
 const axios = require("axios");
 
 const createUser = userData => dispatch => {
-  console.log("hello");
   const { name, email, password } = userData;
   axios
     .post("http://localhost:5000/api/users", {

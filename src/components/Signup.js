@@ -1,17 +1,24 @@
 import React, { Component } from "react";
-import CustomizedSnackbars from "./Snackbar";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import createUser from "../actions/userActions";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  Grid,
+  Typography,
+  Container,
+  FormHelperText
+} from "@material-ui/core";
+import createUser from "../actions/userActions";
+import DialogBox from "./DialogBox";
+import Form from "./Form";
+
+const yup = require("yup");
+var Joi = require("joi-browser");
 
 const styles = theme => ({
   "@global": {
@@ -38,110 +45,149 @@ const styles = theme => ({
   }
 });
 
-class SignUp extends Component {
+class SignUp extends Form {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
-      email: "",
-      password: ""
+      data: { name: "", email: "", password: "" },
+      errors: {},
+      openDialogue: false
     };
   }
 
-  handleChange = e => {
+  schema = {
+    name: yup
+      .string()
+      .matches(/^[a-zA-Z ]*$/, "Enter a valid name.")
+      .min(5)
+      .max(50)
+      .required()
+      .label("Name"),
+    email: yup
+      .string()
+      .email("Enter a valid Email.")
+      .label("Email"),
+    password: yup
+      .string()
+      .required("Enter password")
+      .label("Password")
+  };
+
+  resetDialogBox = () => {
     this.setState({
-      [e.target.name]: e.target.value,
-      [e.target.email]: e.target.value,
-      [e.target.password]: e.target.value
+      openDialogue: false
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log("s");
     const user = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password
+      name: this.state.data.name,
+      email: this.state.data.email,
+      password: this.state.data.password
     };
-
-    this.props.createUser(user);
+    console.log(user);
     this.setState({
-      name: "",
-      email: "",
-      password: ""
+      openDialogue: true
     });
+    this.props.createUser(user);
+    alert("User Added!");
   };
 
   render() {
     const { classes } = this.props;
+    const { data, errors } = this.state;
+
     return (
-      <Container component="main" maxWidth="xs">
-        <CustomizedSnackbars />
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <form
-            className={classes.form}
-            noValidate
-            onSubmit={this.handleSubmit}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Name"
-                  name="name"
-                  value={this.state.name}
-                  autoFocus
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  value={this.state.email}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  value={this.state.password}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
+      <div>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <div className={classes.paper}>
+            <Avatar className={classes.avatar}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign up
+            </Typography>
+            <form
+              className={classes.form}
+              noValidate
+              onSubmit={this.handleSubmit}
             >
-              Sign Up
-            </Button>
-          </form>
-        </div>
-      </Container>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="name"
+                    label="Name"
+                    name="name"
+                    autoFocus
+                    error={errors["name"]}
+                    value={data.name}
+                    onChange={this.handleChange}
+                  />
+                  {errors["name"] && (
+                    <FormHelperText id="component-helper-text" error={true}>
+                      {errors["name"].message}
+                    </FormHelperText>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    error={errors["email"]}
+                    value={data.email}
+                    onChange={this.handleChange}
+                  />
+                  {errors["email"] && (
+                    <FormHelperText id="component-helper-text" error={true}>
+                      {errors["email"].message}
+                    </FormHelperText>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    value={this.state.data.password}
+                    onChange={this.handleChange}
+                  />
+                  {errors["password"] && (
+                    <FormHelperText id="component-helper-text" error={true}>
+                      {errors["password"].message}
+                    </FormHelperText>
+                  )}
+                </Grid>
+              </Grid>
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                Sign Up
+              </Button>
+            </form>
+          </div>
+        </Container>
+        <DialogBox
+          isOpen={this.state.openDialogue}
+          resetDialogBox={this.resetDialogBox}
+        />
+      </div>
     );
   }
 }
@@ -151,9 +197,9 @@ SignUp.propTypes = {
   createUser: PropTypes.func.isRequired
 };
 
-const higherSignup = withStyles(styles)(SignUp);
+const styledSignUp = withStyles(styles)(SignUp);
 
 export default connect(
   null,
   { createUser }
-)(higherSignup);
+)(styledSignUp);
