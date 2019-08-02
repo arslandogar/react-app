@@ -53,14 +53,12 @@ class SignIn extends Form {
     this.state = {
       data: { email: "", password: "" },
       errors: {},
-      openDialogue: false,
-      authToken: ""
+      openDialogue: false
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("rcv prop = ", nextProps.auth["data"]);
-    this.setState({ authToken: nextProps.auth["data"] });
+    localStorage.setItem(this.state.data.email, nextProps.auth.data);
   }
 
   schema = {
@@ -85,9 +83,6 @@ class SignIn extends Form {
       password: this.state.data.password
     };
     this.props.authUser(loginReq);
-    const token = this.state.authToken;
-    console.log(token);
-    localStorage.setItem(this.state.data.email, token);
   };
 
   render() {
