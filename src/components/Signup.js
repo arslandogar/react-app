@@ -18,7 +18,6 @@ import DialogBox from "./DialogBox";
 import Form from "./Form";
 
 const yup = require("yup");
-var Joi = require("joi-browser");
 
 const styles = theme => ({
   "@global": {
@@ -55,13 +54,17 @@ class SignUp extends Form {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ openDialogue: nextProps.userAdded });
+  }
+
   schema = {
     name: yup
       .string()
+      .required()
       .matches(/^[a-zA-Z ]*$/, "Enter a valid name.")
       .min(5)
       .max(50)
-      .required()
       .label("Name"),
     email: yup
       .string()
@@ -73,25 +76,24 @@ class SignUp extends Form {
       .label("Password")
   };
 
-  resetDialogBox = () => {
+  resetForm = () => {
     this.setState({
+      data: { name: "", email: "", password: "" },
       openDialogue: false
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
     const user = {
       name: this.state.data.name,
       email: this.state.data.email,
       password: this.state.data.password
     };
-    console.log(user);
-    this.setState({
-      openDialogue: true
-    });
     this.props.createUser(user);
-    alert("User Added!");
   };
 
   render() {
@@ -130,7 +132,7 @@ class SignUp extends Form {
                   />
                   {errors["name"] && (
                     <FormHelperText id="component-helper-text" error={true}>
-                      {errors["name"].message}
+                      {errors["name"]}
                     </FormHelperText>
                   )}
                 </Grid>
@@ -147,7 +149,7 @@ class SignUp extends Form {
                   />
                   {errors["email"] && (
                     <FormHelperText id="component-helper-text" error={true}>
-                      {errors["email"].message}
+                      {errors["email"]}
                     </FormHelperText>
                   )}
                 </Grid>
@@ -165,7 +167,7 @@ class SignUp extends Form {
                   />
                   {errors["password"] && (
                     <FormHelperText id="component-helper-text" error={true}>
-                      {errors["password"].message}
+                      {errors["password"]}
                     </FormHelperText>
                   )}
                 </Grid>
@@ -185,7 +187,8 @@ class SignUp extends Form {
         </Container>
         <DialogBox
           isOpen={this.state.openDialogue}
-          resetDialogBox={this.resetDialogBox}
+          resetForm={this.resetForm}
+          username={data.name}
         />
       </div>
     );
@@ -197,9 +200,13 @@ SignUp.propTypes = {
   createUser: PropTypes.func.isRequired
 };
 
+const mapStateToProps = state => ({
+  userAdded: state.users["userAdded"]
+});
+
 const styledSignUp = withStyles(styles)(SignUp);
 
 export default connect(
-  null,
+  mapStateToProps,
   { createUser }
 )(styledSignUp);

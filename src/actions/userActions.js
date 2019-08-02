@@ -1,4 +1,4 @@
-import { NEW_USER, LOGIN_USER } from "./types";
+import { NEW_USER, LOGIN_USER, FAILED } from "./types";
 const axios = require("axios");
 
 const createUser = userData => dispatch => {
@@ -9,15 +9,8 @@ const createUser = userData => dispatch => {
       email: email,
       password: password
     })
-    .then(user =>
-      dispatch({
-        type: NEW_USER,
-        payload: user
-      })
-    )
-    .catch(function(error) {
-      console.log(error);
-    });
+    .then(response => dispatch({ type: NEW_USER, payload: response }))
+    .catch(error => dispatch({ type: FAILED, payload: error }));
 };
 
 export default createUser;

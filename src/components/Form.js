@@ -9,11 +9,22 @@ class Form extends Component {
 
   validate = () => {
     const options = { abortEarly: false };
-    const { error } = this.schema.isValidSync(this.state.data, options);
-    if (!error) return null;
-    const errors = {};
-    for (let item of error.details) errors[item.path[0]] = item.message;
-    return errors;
+    try {
+      yup
+        .object()
+        .shape(this.schema)
+        .validateSync(this.state.data, options);
+      return null;
+    } catch (e) {
+      console.log(e);
+      const errors = {};
+      const errorMessages = {};
+      for (let item of e.inner) {
+        if (!errorMessages[item.path]) errorMessages[item.path] = item.message;
+      }
+      console.log(errorMessages);
+      return errorMessages;
+    }
   };
 
   validateProperty = ({ name, value }) => {
@@ -21,11 +32,10 @@ class Form extends Component {
     const obj = { [name]: value };
     const _schema = yup.object().shape({ [name]: this.schema[name] });
     try {
-      const validObj = _schema.validateSync(obj, options);
+      _schema.validateSync(obj, options);
       return null;
     } catch (e) {
-      const errorMessage = { name: [name], message: e.message };
-      return errorMessage;
+      return e.message;
     }
   };
 

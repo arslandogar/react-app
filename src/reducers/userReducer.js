@@ -1,8 +1,6 @@
-import { NEW_USER, LOGIN_USER } from "../actions/types";
+import { NEW_USER, LOGIN_USER, FAILED } from "../actions/types";
 
-const initialState = {
-  user: {}
-};
+const initialState = { userAdded: false };
 
 export default function(state = initialState, action) {
   switch (action.type) {
@@ -14,8 +12,16 @@ export default function(state = initialState, action) {
     case NEW_USER:
       return {
         ...state,
-        item: action.payload
+        success: action.payload,
+        userAdded: true
       };
+    case FAILED:
+      return {
+        ...state,
+        error: action.error,
+        userAdded: false
+      };
+
     default:
       return state;
   }
