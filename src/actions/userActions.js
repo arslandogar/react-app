@@ -13,4 +13,15 @@ const createUser = userData => dispatch => {
     .catch(error => dispatch({ type: FAILED, payload: error }));
 };
 
+export const authUser = userData => dispatch => {
+  const { email, password } = userData;
+  axios
+    .post("http://localhost:5000/api/logins", {
+      email: email,
+      password: password
+    })
+    .then(response => dispatch({ type: LOGIN_USER, payload: response }))
+    .catch(error => dispatch({ type: FAILED, payload: error }));
+};
+
 export default createUser;

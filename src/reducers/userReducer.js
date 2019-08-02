@@ -7,7 +7,7 @@ export default function(state = initialState, action) {
     case LOGIN_USER:
       return {
         ...state,
-        items: action.payload
+        authUser: action.payload
       };
     case NEW_USER:
       return {

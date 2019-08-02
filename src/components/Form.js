@@ -16,8 +16,6 @@ class Form extends Component {
         .validateSync(this.state.data, options);
       return null;
     } catch (e) {
-      console.log(e);
-      const errors = {};
       const errorMessages = {};
       for (let item of e.inner) {
         if (!errorMessages[item.path]) errorMessages[item.path] = item.message;
