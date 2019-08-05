@@ -58,7 +58,9 @@ class SignIn extends Form {
   }
 
   componentWillReceiveProps(nextProps) {
-    localStorage.setItem(this.state.data.email, nextProps.auth.data);
+    if (!nextProps.loginFailed) {
+      localStorage.setItem("token", nextProps.authToken);
+    }
   }
 
   schema = {
@@ -98,6 +100,11 @@ class SignIn extends Form {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
+          {this.props.loginFailed && (
+            <Typography component="h6" variant="h5" color="error">
+              Invalid email or password.
+            </Typography>
+          )}
           <form
             className={classes.form}
             noValidate
@@ -170,9 +177,13 @@ SignIn.propTypes = {
 
 const styledSignIn = withStyles(styles)(SignIn);
 
-const mapStateToProps = state => ({
-  auth: state.users.authUser
-});
+const mapStateToProps = state => {
+  return {
+    authToken: state.users.authUser["data"],
+    submitting: state.users["submitting"],
+    loginFailed: state.users["loginFailed"]
+  };
+};
 
 export default connect(
   mapStateToProps,

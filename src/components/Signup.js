@@ -49,13 +49,19 @@ class SignUp extends Form {
     super(props);
     this.state = {
       data: { name: "", email: "", password: "" },
-      errors: {},
+      errors: { name: "", email: "", password: "" },
       openDialogue: false
     };
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({ openDialogue: nextProps.userAdded });
+    if (nextProps.emailError) {
+      const data = { ...this.state.data };
+      const errors = { ...this.state.errors };
+      errors["email"] = "This email is already in use.";
+      this.setState({ data, errors });
+    }
   }
 
   schema = {
@@ -79,7 +85,10 @@ class SignUp extends Form {
   resetForm = () => {
     this.setState({
       data: { name: "", email: "", password: "" },
-      openDialogue: false
+      errors: { name: "", email: "", password: "" },
+      openDialogue: false,
+      userAdded: false,
+      emailError: false
     });
   };
 
@@ -94,6 +103,14 @@ class SignUp extends Form {
       password: this.state.data.password
     };
     this.props.createUser(user);
+  };
+
+  userAdded = () => {
+    return this.props.userAdded;
+  };
+
+  emailExists = () => {
+    return this.props.emailError;
   };
 
   render() {
@@ -200,10 +217,13 @@ SignUp.propTypes = {
   createUser: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-  userAdded: state.users["userAdded"]
-});
-
+const mapStateToProps = state => {
+  return {
+    submitting: state.users["submitting"],
+    userAdded: state.users["userAdded"],
+    emailError: state.users["emailError"]
+  };
+};
 const styledSignUp = withStyles(styles)(SignUp);
 
 export default connect(

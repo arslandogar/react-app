@@ -13,7 +13,7 @@ const User = db.define(
           msg: "Please enter your name"
         },
         is: {
-          args: ["^[a-z]+$", "i"],
+          args: [/^[a-zA-Z ]*$/],
           msg: "Name must only contain letters"
         },
         len: {
